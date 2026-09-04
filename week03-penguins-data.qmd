@@ -102,8 +102,8 @@ Second, with the `dplyr` package (part of `tidyverse`)
 
 ```{r, message=FALSE}
 
-penguins_data <- penguins_data |>  
-  rename(individual_id = "Individual ID")
+#penguins_data <- penguins_data |>  
+  #rename(individual_id = "Individual ID")
 
 ```
 
@@ -196,7 +196,14 @@ The magic of `ggplot2` is simplicity and *customization* so let's customize, bas
 ![](https://allisonhorst.github.io/palmerpenguins/reference/figures/lter_penguins.png){fig-align="center" width="50%"}
 
 ```{r, message=FALSE, warning=FALSE}
-
+ggplot(data = penguins_data, aes(x = flipper_length_mm, fill = species)) +
+  geom_histogram(alpha = 0.75) + #alpha changes transparancy
+  scale_fill_manual(values = c("darkorange","darkorchid","cyan4"), name = "Penguin Species") + #manual colors
+  theme_bw() +
+  labs(title = "Palmer Penguins' Flipper Length",
+       subtitle = "Three species observed on three islands in the Palmer Archipelago",
+       x = "Flipper length(mm)",
+       y = "Number of Penguins")
 
 
 ```
@@ -204,6 +211,14 @@ The magic of `ggplot2` is simplicity and *customization* so let's customize, bas
 Manually choosing colors is cool, but there are also color palettes available for us with `viridis`
 
 ```{r, message=FALSE}
+ggplot(data = penguins_data, aes(x = flipper_length_mm, fill = species)) +
+  geom_histogram(alpha = 0.99) + #alpha changes transparancy
+  scale_fill_viridis_d(option = "magma", name = "Penguin Species") +
+  theme_bw() +
+  labs(title = "Palmer Penguins' Flipper Length",
+       subtitle = "Three species observed on three islands in the Palmer Archipelago",
+       x = "Flipper length(mm)",
+       y = "Number of Penguins")
 
 
 
@@ -212,7 +227,8 @@ Manually choosing colors is cool, but there are also color palettes available fo
 Let's investigate flipper length with another type of data viz: a box plot!
 
 ```{r, message=FALSE}
-
+ggplot(data = penguins_data, aes(y = flipper_length_mm, fill = species))+ 
+  geom_boxplot()
 
 
 ```
@@ -220,7 +236,17 @@ Let's investigate flipper length with another type of data viz: a box plot!
 Again, let's customize! Add points for individual penguins.
 
 ```{r, message=FALSE}
-
+ggplot(data = penguins_data, aes(x = species, y = flipper_length_mm, fill = species))+ 
+  geom_boxplot() +
+  geom_jitter(size = .5) +
+  theme_bw() +
+  scale_fill_manual(values = c("darkorange","darkorchid","cyan4"), name = "Penguin Species") + #manual colors
+  labs(title = "Palmer Penguins' Flipper Length",
+       subtitle = "Three species observed on three islands in the Palmer Archipelago",
+       x = "Flipper length(mm)",
+       y = "Number of Penguins") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), legend.position = "none") +
+  coord_flip()
 
 
 ```
@@ -228,7 +254,9 @@ Again, let's customize! Add points for individual penguins.
 Awesome! Let's take a look at flipper length and it's relationship to body mass
 
 ```{r, message=FALSE}
-
+ggplot(data = penguins_data, aes(x = flipper_length_mm, y = body_mass_g , color = species, shape = island))+ 
+  geom_point()+ 
+  scale_shape_manual(values = c(11,14,8))
 
 
 ```
@@ -237,7 +265,7 @@ Cool! Let's add species to this plot. What about island?
 
 ```{r, message=FALSE}
 
-
+#See above
   
 ```
 
@@ -248,6 +276,11 @@ Cool! Let's add species to this plot. What about island?
   - In the code chunk below create a **histogram** with `culmen_depth_mm` on the x axis and `color` by `species` using the data frame *penguins_data*. Give the plot the theme: `theme_bw()`. Assign a color palette with `scale_fill_viridis_d()`. Give the plot a title, subtitle and custom x and y axis titles.
 
 ```{r, message=FALSE, warning=FALSE}
+
+plotname <- ggplot(data = penguin_data_from_url, aes(x = culmen_depth_mm, fill = species))+
+  geom_histogram()+
+  theme_bw()+
+  scale_fill_viridis_d(option = "plasma", name = "Penguin")
 
 
 
