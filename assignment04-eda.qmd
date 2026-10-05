@@ -1,0 +1,171 @@
+---
+title: "Assignment 4: Exploratory Data Analysis"
+author: "Lars Richel"
+date: "`r Sys.Date()`"
+format: html
+editor: visual
+---
+
+## Overview
+
+Due: **Friday 9/25 11:59pm**
+
+In this assignment, you will practice Exploratory Data Analysis (EDA) by making plots from a **Kaggle dataset of your choice**.
+
+You will submit **at least 4 different plot types**, with short written interpretations for each.
+
+Part 1 is worth a total of 1 point, and Part 2 is worth 4 points (1 point for each plot, question, and interpretation).
+
+## Part 1: Get Your Data
+
+1.  Go to [Kaggle Datasets](https://www.kaggle.com/datasets), create an account, and choose a dataset that interests you. Ensure your data has:
+    1.  At least 4 variables
+    2.  At least one categorical and one continuous variable
+    3.  I recommend data that contains at least 50-100 observations
+    4.  Tip: Open the CSV on Kaggle first and skim the columns to check that it meets these requirements
+2.  Download the dataset as a CSV file.
+3.  Place the CSV in your class R project `data` folder.
+4.  Read it into R with `read_csv()`.
+
+```{r, message=FALSE}
+library(tidyverse)
+movies <- read_csv("data/streaming_content_trends.csv")
+
+```
+
+### Describe your data
+
+Data author: Doesn't say anything about authors, but the collaborator/owner is Maria Aqdas
+
+Link: <https://www.kaggle.com/datasets/mariaaqdas/popular-movies-and-tv-shows-dataset-2026/data>
+
+Description: Contains metadata of 1200 movies and tv shows fetched via the TMDB API. Includes columns like media type, genres, release dates, popularity scores, vote averages, and synopses across popular, top-rated, and trending.
+
+### Preview your data
+
+Use some of the strategies you've learned in this class or picked up elsewhere to summarize and quickly explore your data.
+
+```{r}
+summary(movies)
+
+```
+
+### Summary stats
+
+Before you make plots, you must also:
+
+- Show basic summaries of your dataset, including:
+
+  - `count()` for categorical variables (to see category frequencies)
+
+  - `mean()`, `median()`, `sd()`, `min()`, `max()` for at least one numeric variable
+
+  - Remember to use `na.rm = TRUE` if you have missing values that affect summaries!
+
+```{r}
+movies %>% count(media_type)
+movies %>% count(search_category)
+movies %>% count(original_language)
+movies %>% count(origin_country)
+movies %>% count(genres)
+movies %>% count(is_recent)
+
+movies %>%
+  summarize(
+    mean = mean(vote_average, na.rm = TRUE),
+    median = median(vote_average, na.rm = TRUE),
+    sd = sd(vote_average, na.rm = TRUE),
+    min = min(vote_average, na.rm = TRUE),
+    max = max(vote_average, na.rm = TRUE)
+  )
+```
+
+Write 2–3 sentences here: What do the category counts tell you? What does the numeric summary show about spread, center, or outliers? The category counts tell us how many of the tv shows or movies fit into a certain category. THe numeric summary shows us that the vote_average is skewed to the left and has at least 2 outliers which are the maxs and the mins and he center is 8.1.
+
+## Part 2: Visualize Your Data
+
+Create **at least 4 plots**, each of a different type. Your plots may share variables, but each one should answer a **different question** about your data. At least one plot must include a variable that isn't in the others.
+
+Each plot should have:
+
+- A title and labeled axes
+
+- A short interpretation (2-3 sentences) underneath
+
+  - Sample interpretation: (boxplot of `price` by `cut` from `diamonds` data): *Ideal diamonds have the lowest median price, which is surprising since Ideal is the best cut. Every cut also has a lot of very expensive outliers. One possible reason for the low Ideal prices is that Ideal diamonds might be smaller on average, which I could check by plotting carat by cut.*
+
+Use the EDA Part 3 notes as your reference. Since this is an EDA assignment, your plots can look plain, but consider adding colors, themes, or interactivity for interpretability and visual appeal if you know how.
+
+### Plot 1
+
+```{r}
+# insert code here
+ggplot(movies, aes(x = search_category)) +
+  geom_bar(fill = "blue") +
+  labs(
+    title = "Number of Titles by Search Category",
+    x = "Search Category",
+    y = "count"
+  )
+```
+
+Question this plot answers:
+
+Interpretation:
+
+### Plot 2
+
+```{r}
+# insert code here
+ggplot(movies, aes(x = vote_average)) +
+  geom_histogram(binwidth = .5, fill = "blue", color = "black") +
+  labs(
+    title = "Distribution of User Ratings", 
+    x = "Vote Average",
+    y = "count"
+  )
+```
+
+Question this plot answers:
+
+Interpretation:
+
+### Plot 3
+
+```{r}
+# insert code here
+ggplot(movies, aes(x= media_type, y = vote_average, fill = media_type))+
+  geom_boxplot() +
+  labs(
+    title = "User Ratings Comparison: Movies vs. TV Shows",
+    x = "Media Type",
+    y = "Vote Average"
+  )
+```
+
+Question this plot answers:
+
+Interpretation:
+
+### Plot 4
+
+```{r}
+# insert code here
+ggplot(movies, aes(x = vote_count, y =popularity))+
+  geom_point(alpha = .6, color = "purple") +
+  labs(
+    title = "Popularity Score vs. Total Vote Count",
+    x = "Vote Count",
+    y = "Popularity Score"
+  )
+```
+
+Question this plot answers:
+
+Interpretation:
+
+------------------------------------------------------------------------
+
+# Push to GitHub AND submit link on Canvas!!
+
+Assignment is due Friday 9/25 at 11:59 pm.
