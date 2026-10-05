@@ -109,9 +109,9 @@ ggplot(movies, aes(x = search_category)) +
   )
 ```
 
-Question this plot answers:
+Question this plot answers: How many titles belong in each search category?
 
-Interpretation:
+Interpretation: The popular category contains the largest number of titles. Followed by top_rated. And the trending category has the fewest titles. This shows that the dataset is weighted toward already established popular content rather than new trending ones.
 
 ### Plot 2
 
@@ -126,9 +126,9 @@ ggplot(movies, aes(x = vote_average)) +
   )
 ```
 
-Question this plot answers:
+Question this plot answers: What is the distribution of ratings across all the titles in the dataset?
 
-Interpretation:
+Interpretation: Most of the titles have ratings between 7.0 and 8.5. There are a few titles with near 0 ratings which are outliers. But overall, the graph is skewed to the left.
 
 ### Plot 3
 
@@ -143,9 +143,9 @@ ggplot(movies, aes(x= media_type, y = vote_average, fill = media_type))+
   )
 ```
 
-Question this plot answers:
+Question this plot answers: How do ratings between movies and tv shows compare?
 
-Interpretation:
+Interpretation: TV shows have a slightly higher median compared to movies. Both show a similar spread in ratings with some outliers and zero ratings. But overall, tv shows show slighly higher scores than movies.
 
 ### Plot 4
 
@@ -160,9 +160,9 @@ ggplot(movies, aes(x = vote_count, y =popularity))+
   )
 ```
 
-Question this plot answers:
+Question this plot answers: Is there a relationship between total vote count and popularity score?
 
-Interpretation:
+Interpretation: Most titles have lower vote counts and low popularity scores, while there are a few extreme outliers that have high popularity scores. So, having a high total vote count does not guarantee a high popularity score.
 
 ------------------------------------------------------------------------
 
