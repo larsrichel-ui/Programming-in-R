@@ -1,6 +1,6 @@
 ---
 title: "Assignment 5: Substance Use Treatment Mapping"
-subtitle: "STUDENT NAME"
+subtitle: "Lars Richel"
 author: "Amber Camp"
 date: "`r Sys.Date()`"
 format: html
@@ -61,14 +61,25 @@ c)  In a sentence or two: what does the `reason` value "Transferred to another t
 
 ```{r}
 #| label: q1
+teds_d %>%
+  tabyl(reason)
 
+ggplot(teds_d, aes(x = services_d)) +
+  geom_bar(fill = "steelblue") +
+  labs(
+    title = "Number of Discharges by Treatment Service Type",
+    x = "Service Type",
+    y = "# of Discharges"
+  ) + 
+  theme_minimal() +
+  coord_flip()
 ```
 
-**Answer to (a):**
+**Answer to (a): Treatment Completed 48%**
 
 **Answer to (b):** (produce a bar chart in the code chunk above)
 
-**Answer to (c):**
+**Answer to (c): It means that the completion rate will be lower because they did not complete the treatment at that facility. So, a state that transfers a lot of patients would appear to have a lower completion rate than one that transfers very few.**
 
 ## Question 2: Mapping no use at discharge
 
@@ -102,10 +113,47 @@ Pick one. **Below your map, write one sentence saying which denominator you used
 
 ```{r}
 #| label: q2
+no_use_percent <- teds_d |>
+  filter(reason == "Treatment completed") |>
+  filter(freq1_d != "unknown") |>
+  group_by(stfips) |>
+  summarize(
+    total_completed = n(),
+    no_use_count= sum(freq1_d == "no use", na.rm = TRUE),
+    pct_no_use = round(100 * no_use_count / total_completed, 1)
+  )
 
+states_map <- get_urbn_map(map = "states", sf = TRUE) |>
+  mutate(stfips = as.numeric(state_fips))
+
+map_data <- states_map |>
+  left_join(no_use_percent, by = "stfips")
+
+gg_map <- ggplot(map_data) + 
+  geom_sf_interactive(
+    aes(
+      fill = pct_no_use,
+      tooltip = paste0(state_name, ": ", pct_no_use, "% no use at discharge"),
+      data_id = state_fips
+    ),
+    color = "white",
+    size = .2
+  )+
+  scale_fill_viridis_c(
+    name = "% No Use",
+    option = "viridis",
+    na.value = "grey"
+  ) +
+  labs(
+    title = "Percentage of Completed Treatment Episodes Ending in No Use",
+    subtitle = "By State"
+  ) +
+  theme_void()
+
+girafe(ggobj = gg_map)
 ```
 
-**Denominator I used, and why:**
+**Denominator I used, and why: I used competed treatments where frequency was not unknown because including those cases would lower the percentage for states with higher rates of missing data.**
 
 ## Question 3: Service type and length of stay
 
@@ -123,10 +171,48 @@ Investigate how **completion rates** differ across **service type** (`services_d
 
 ```{r}
 #| label: q3
+service_completion <- teds_d |>
+  filter(!is.na(services_d), !is.na(reason)) |>
+  group_by(services_d) |>
+  summarize(
+    total = n(),
+    completed_count = sum(reason == "Treatment completed", na.rm = TRUE),
+    completion_rate = completed_count / total
+  )
 
+ggplot(service_completion, aes(x = reorder(services_d, completion_rate), y =completion_rate)) +
+  geom_col(fill = "steelblue") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  coord_flip()+
+  labs(
+    title = "Treatment Completion Rate by Service Type",
+    x = "Service Type",
+    y = "Completion Rate"
+  ) + 
+  theme_minimal()
+
+los_completion <- teds_d |>
+  filter(!is.na(los), !is.na(reason)) |>
+  group_by(los) |>
+  summarize(
+    total = n(),
+    completed_count = sum(reason == "Treatment completed", na.rm = TRUE),
+    completion_rate = completed_count / total
+  )
+
+ggplot(los_completion, aes(x = factor(los), y = completion_rate)) +
+  geom_col(fill = "steelblue") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  coord_flip() +
+  labs(
+    title = "Treatment Completion Rate by LOS",
+    x = "LOS",
+    y = "Completion Rate"
+  ) +
+  theme_minimal()
 ```
 
-**Summary:**
+**Summary: Completion Rates vary across service types and length of stay. In service types, the highest average completion rates come from detoxification programs, while residential programs fall in the middle, and outpatient programs coming in last. However, in length of stay there is no real correlation. You cannot be confident in saying that the longer you stay the more likely you are to complete treatment, and you cannot say that the shorter you stay the more likely you are to complete treatment.**
 
 ## Extra Credit (optional, up to 2 pts)
 
@@ -138,10 +224,28 @@ Then, in a sentence, say what this combined view shows that your two separate ch
 
 ```{r}
 #| label: extra-credit
-
+comp <- teds_d |>
+  filter(!is.na(services_d), !is.na(los), !is.na(reason)) |>
+  group_by(services_d, los) |>
+  summarize(
+    total = n(),
+    completed_count = sum(reason == "Treatment completed", na.rm = TRUE),
+    completion_rate = completed_count / total, 
+    .groups = "drop"
+  )
+ggplot(comp, aes(x= factor(los), y =completion_rate)) +
+  geom_col(fill = "steelblue") +
+  facet_wrap(~services_d) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(
+    title = "Completion Rate by LOS Across Service Types",
+    x = "LOS",
+    y = "Completion Rate"
+  )+ 
+  theme_minimal()
 ```
 
-**What the combined view adds:**
+**What the combined view adds: This shows there is a correlation between length of stay and completion rate, it just depends on what service type you are looking at. Some service types show no correlation, but some also show that the longer you stay the more likely you are to complete treatment.**
 
 ------------------------------------------------------------------------
 
